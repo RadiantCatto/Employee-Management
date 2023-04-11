@@ -2,13 +2,14 @@ from django.urls import path
 from .views import (
     MainEmployees,
     EmployeeDetails,
-    EmployeesRegularization
+    EmployeesRegularization,
+    WorkSchedulesView
 )
 
 urlpatterns = [
     # List all employees 
     # Employees with paginator (employees/?page_number=2&page_size=20)
-    path('employees/', MainEmployees.as_view(), name='employee-list'),
+    path('employees', MainEmployees.as_view(), name='employee-list'),
     #Get the Employees in the Employees/search/?keyword=
     path('employees/search', MainEmployees.as_view(), name='employee-search'),
     # Retrieve,  an employee by id
@@ -21,4 +22,6 @@ urlpatterns = [
     path('employees/<int:pk>/edit/', MainEmployees.as_view(), name='edit_employee'),
     # Delete an employee record using DELETE method
     path('employees/delete/<int:pk>/', MainEmployees.as_view(), name='delete-employee'),
+    # uses WorkSchedulesView to handle POST requests for creating/updating work schedules
+    path('workschedules/', WorkSchedulesView.as_view())
 ]

@@ -1,18 +1,27 @@
 
 from datetime import datetime, timedelta
 from rest_framework import serializers
-from .models import Employees
+from .models import Employees,WorkSchedules
+
+class WorkSchedulesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WorkSchedules
+        fields = fields = ('id', 'employee', 'date', 'time_start',
+                            'time_end', 'lunch_break_start', 'lunch_break_end',
+                              'created_by', 'created_datetime')
 
 class EmployeesSerializer(serializers.ModelSerializer):
     tenureship = serializers.SerializerMethodField()
-
+    fullname = serializers.SerializerMethodField()
     class Meta:
         model = Employees
-        fields = ('id', 'firstname', 'middlename', 'lastname',
+        fields = ('id', 'firstname', 'middlename', 'lastname','fullname',
                    'suffix', 'birthday', 'civilstatus',
                   'created_date', 'updated_date',  'isRegular',
                   'RegularizationDate', 'EmploymentDate', 'tenureship')
-
+        
+    def get_fullname(self, obj):
+        return f"{obj.firstname} {obj.middlename} {obj.lastname}"
     def get_tenureship(self, obj):
         today = datetime.now().date()
         employment_date_str = str(obj.EmploymentDate)
@@ -24,6 +33,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
             return 'short-tenure'
         else:
             return 'long-tenure'
+
 
 
     def validate_birthday(self, value):
@@ -42,6 +52,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("invalid date format for birthdate")
 
     def to_internal_value(self, data):
+
         """
         Remove middle name and suffix fields if they are not present in request data
         """
@@ -50,3 +61,4 @@ class EmployeesSerializer(serializers.ModelSerializer):
         if 'suffix' not in data:
             data['suffix'] = None
         return super().to_internal_value(data)
+    

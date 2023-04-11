@@ -7,7 +7,7 @@ class Employees(models.Model):
     middlename = models.CharField('Middle Name: ',max_length=255, null=True)
     lastname = models.CharField('Last Name: ',max_length=255, null=True)
     suffix = models.CharField('Suffix: ',max_length=255, null=True)
-    birthday = models.DateField('Birthday' , auto_now=False, auto_now_add=False, null=True)
+    birthday = models.DateField('Birthday' ,null=True)
     gender = models.CharField('Gender: ',max_length=255, null=True)
     civilstatus = models.CharField('Civil Status: ',max_length=255, null=True)
     created_date = models.DateTimeField('Created Date: ',auto_now_add=True, null=True)
@@ -17,5 +17,31 @@ class Employees(models.Model):
     EmploymentDate = models.DateField(null=True)  # new column
     class Meta:
         db_table = 'Employees'
-        
+# new class WorkSchedules
+class WorkSchedules(models.Model):
+    # Define a foreign key field that references the Employees table's id column
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, related_name='workschedule_set')
+    date = models.DateField()  # Date field for the work schedule
+    time_start = models.TimeField()  # Start time of work
+    time_end = models.TimeField()  # End time of work
+    lunch_break_start = models.TimeField()  # Start time of lunch break
+    lunch_break_end = models.TimeField()  # End time of lunch break
+    created_by = models.CharField(max_length=255)  # Name of the user who created the work schedule
+    created_datetime = models.DateTimeField(auto_now_add=True)  # Date and time the work schedule was created
+
+    class Meta:
+        db_table = 'WorkSchedules'  # Set the name of the database table for this model
+
+    def save(self, *args, **kwargs):
+        # Check if employee_id field is empty
+        if not self.employee_id:
+            raise ValueError("employee_id cannot be empty.")
+        # Attempt to retrieve the employee object with the employee_id
+        try:
+            employee = Employees.objects.get(pk=self.employee_id)
+        except Employees.DoesNotExist:
+            # If the employee does not exist, raise a ValueError
+            raise ValueError("employee_id does not exist in Employees table.")
+        # Call the save method of the parent class to save the record
+        super(WorkSchedules, self).save(*args, **kwargs)
 
