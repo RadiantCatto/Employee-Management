@@ -1,0 +1,8 @@
+django 
+environ
+django-environ
+mssql
+django-mssql
+pyodbc
+mssql-django
+django-mssql-backend
