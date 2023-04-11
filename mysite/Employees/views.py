@@ -31,9 +31,9 @@ class MainEmployees(APIView):
     def get(self, request):
         keyword = request.GET.get('keyword', '')
         employees = Employees.objects.filter(
-            Q(first_name__icontains=keyword) |
-            Q(middle_name__icontains=keyword) |
-            Q(last_name__icontains=keyword) 
+            Q(firstname__icontains=keyword) |
+            Q(middlename__icontains=keyword) |
+            Q(lastname__icontains=keyword) 
             )
         # apply pagination
         page_size = request.GET.get('page_size', 10)

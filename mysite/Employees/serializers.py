@@ -8,10 +8,10 @@ class EmployeesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Employees
-        fields = ('id', 'first_name', 'middle_name', 'last_name',
-                  'full_name', 'suffix', 'birthday', 'civil_status',
-                  'create_date', 'update_date', 'salary', 'hire_date', 
-                  'isRegular', 'RegularizationDate', 'EmploymentDate', 'tenureship')
+        fields = ('id', 'firstname', 'middlename', 'lastname',
+                   'suffix', 'birthday', 'civilstatus',
+                  'created_date', 'updated_date',  'isRegular',
+                  'RegularizationDate', 'EmploymentDate', 'tenureship')
 
     def get_tenureship(self, obj):
         today = datetime.now().date()
@@ -43,10 +43,10 @@ class EmployeesSerializer(serializers.ModelSerializer):
 
     def to_internal_value(self, data):
         """
-        Remove middle_name and suffix fields if they are not present in request data
+        Remove middle name and suffix fields if they are not present in request data
         """
         if 'middle_name' not in data:
-            data['middle_name'] = None
+            data['middlename'] = None
         if 'suffix' not in data:
             data['suffix'] = None
         return super().to_internal_value(data)
