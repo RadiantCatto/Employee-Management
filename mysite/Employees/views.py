@@ -47,18 +47,30 @@ class MainEmployees(APIView):
             raise Http404
 
     def get(self, request):
+        # Get the "keyword" parameter from the request query string, default to empty string if not present
         keyword = request.GET.get('keyword', '')
-        employees = Employees.objects.filter(
-            Q(firstname__icontains=keyword) |
-            Q(middlename__icontains=keyword) |
-            Q(lastname__icontains=keyword) 
-            )
-        # apply pagination
-        page_size = request.GET.get('page_size', 10)
-        paginator = Paginator(employees, page_size)
-        page_number = request.GET.get('page_number', 1)
+        if not keyword:
+            employees = Employees.objects.all()
+        # Filter the Employees queryset to include any records where the firstname, middlename, or lastname field contains the keyword
+        # Also include any records where the concatenation of the firstname, middlename, and lastname fields matches the keyword
+        else:
+            employees = Employees.objects.filter(
+                Q(firstname__icontains=keyword) |
+                Q(middlename__icontains=keyword) |
+                Q(lastname__icontains=keyword) |
+                Q(firstname__icontains=keyword.split(' ')[0], middlename__icontains=keyword.split(' ')[1], lastname__icontains=keyword.split(' ')[2])
+            )     
+        # Get the "page_size" parameter from the request query string, default to 10 if not present
+        page_size = request.GET.get('page_size', 10)  
+        # Create a Paginator object with the filtered Employees queryset and the requested page size
+        paginator = Paginator(employees, page_size)  
+        # Get the "page_number" parameter from the request query string, default to 1 if not present
+        page_number = request.GET.get('page_number', 1) 
+        # Get a Page object for the requested page number from the Paginator object
         employees_page = paginator.get_page(page_number)
+        # Serialize the Page object using the EmployeesSerializer
         serializer = EmployeesSerializer(employees_page, many=True)
+        # Return the serialized data in a Response object
         return Response(serializer.data)
 
     def post(self, request):
@@ -80,7 +92,7 @@ class MainEmployees(APIView):
         employee = self.get_object(pk)
         employee.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
+#class EmployeesRegularization checks if regular employee
 class EmployeesRegularization(APIView):
     def get_object(self, pk):
         try:
