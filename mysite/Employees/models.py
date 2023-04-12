@@ -17,6 +17,8 @@ class Employees(models.Model):
     EmploymentDate = models.DateField(null=True)  # new column
     class Meta:
         db_table = 'Employees'
+    def __str__(self):
+        return f"{self.firstname} {self.lastname}"
 # new class WorkSchedules
 class WorkSchedules(models.Model):
     # Define a foreign key field that references the Employees table's id column
@@ -31,7 +33,9 @@ class WorkSchedules(models.Model):
 
     class Meta:
         db_table = 'WorkSchedules'  # Set the name of the database table for this model
-
+    def __str__(self):
+        return f"{self.employee} - {self.date}"
+    
     def save(self, *args, **kwargs):
         # Check if employee_id field is empty
         if not self.employee_id:
