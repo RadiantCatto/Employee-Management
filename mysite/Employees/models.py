@@ -16,7 +16,9 @@ class Employees(models.Model):
     RegularizationDate = models.DateField(null=True)  # new column
     EmploymentDate = models.DateField(null=True)  # new column
     class Meta:
-        db_table = 'Employees'
+        # Set the name of the database table for this model
+        db_table = 'Employees' 
+    # Return a string containing the values of the "firstname" and "lastname" attributes
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
 # new class WorkSchedules
@@ -33,6 +35,7 @@ class WorkSchedules(models.Model):
 
     class Meta:
         db_table = 'WorkSchedules'  # Set the name of the database table for this model
+    # Return a string containing the name of the employee and the date
     def __str__(self):
         return f"{self.employee} - {self.date}"
     
