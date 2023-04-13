@@ -28,7 +28,7 @@ class EmployeeDetails(APIView):
 
         # Return the serialized employee data as a JSON response
         return Response(employee_data)
-    
+#Class MainEmployees GET POST PATCH DELETE Functions
 class MainEmployees(APIView):
     def get_object(self, pk):
         try:
@@ -109,7 +109,6 @@ class EmployeesRegularization(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
 
