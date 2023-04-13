@@ -24,7 +24,7 @@ class Employees(models.Model):
 # new class WorkSchedules
 class WorkSchedules(models.Model):
     # Define a foreign key field that references the Employees table's id column
-    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, related_name='workschedule_set')
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, related_name='WorkSchedules')
     date = models.DateField()  # Date field for the work schedule
     time_start = models.TimeField()  # Start time of work
     time_end = models.TimeField()  # End time of work

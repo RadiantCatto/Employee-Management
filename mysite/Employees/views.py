@@ -26,16 +26,6 @@ class EmployeeDetails(APIView):
         serializer = EmployeesSerializer(employee)
         employee_data = serializer.data
 
-        # Get all workschedules related to the employee object
-        workschedules = employee.workschedule_set.all()
-
-        # Serialize the workschedules using WorkScheduleSerializer
-        workschedule_serializer = WorkSchedulesSerializer(workschedules, many=True)
-        workschedule_data = workschedule_serializer.data
-
-        # Add the serialized workschedules to employee data dictionary
-        employee_data['WorkSchedules'] = workschedule_data
-
         # Return the serialized employee data as a JSON response
         return Response(employee_data)
     
