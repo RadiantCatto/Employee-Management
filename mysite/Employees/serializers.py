@@ -19,7 +19,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
         fields = ('id', 'firstname', 'middlename', 'lastname','fullname',
                    'suffix', 'birthday', 'civilstatus',
                   'created_date', 'updated_date',  'isRegular',
-                  'RegularizationDate', 'EmploymentDate', 'tenureship','WorkSchedules')
+                  'RegularizationDate', 'EmploymentDate', 'tenureship','WorkSchedules') #add field Workschedules
         
     def get_fullname(self, obj):
         return f"{obj.firstname} {obj.middlename} {obj.lastname}"
@@ -60,4 +60,6 @@ class EmployeesSerializer(serializers.ModelSerializer):
         if 'suffix' not in data:
             data['suffix'] = None
         return super().to_internal_value(data)
+        
+
     
