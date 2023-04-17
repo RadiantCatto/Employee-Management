@@ -16,15 +16,11 @@ class Employees(models.Model):
     RegularizationDate = models.DateField(null=True)  # new column
     EmploymentDate = models.DateField(null=True)  # new column
     class Meta:
-        # Set the name of the database table for this model
-        db_table = 'Employees' 
-    # Return a string containing the values of the "firstname" and "lastname" attributes
-    def __str__(self):
-        return f"{self.firstname} {self.lastname}"
+        db_table = 'Employees'
 # new class WorkSchedules
 class WorkSchedules(models.Model):
     # Define a foreign key field that references the Employees table's id column
-    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, related_name='WorkSchedules')
+    employee = models.ForeignKey(Employees, on_delete=models.CASCADE, related_name='workschedule_set')
     date = models.DateField()  # Date field for the work schedule
     time_start = models.TimeField()  # Start time of work
     time_end = models.TimeField()  # End time of work
@@ -35,10 +31,7 @@ class WorkSchedules(models.Model):
 
     class Meta:
         db_table = 'WorkSchedules'  # Set the name of the database table for this model
-    # Return a string containing the name of the employee and the date
-    def __str__(self):
-        return f"{self.employee} - {self.date}"
-    
+
     def save(self, *args, **kwargs):
         # Check if employee_id field is empty
         if not self.employee_id:
