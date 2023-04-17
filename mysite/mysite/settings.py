@@ -37,7 +37,7 @@ ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(",")
 SITE_ID = 1
 
 # Application definition
-
+#updated-installed apps 
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "Employees",
-    "Users",    
+    "Users",   
     "rest_framework",
     "django.contrib.sites",
 ]
