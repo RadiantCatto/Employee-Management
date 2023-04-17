@@ -68,7 +68,7 @@ class MainEmployees(APIView):
         employee.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-#class EmployeesRegularization checks if regular employee
+#Class EmployeesRegularization checks if regular employee
 class EmployeesRegularization(APIView):
     def get_object(self, pk):
         try:
