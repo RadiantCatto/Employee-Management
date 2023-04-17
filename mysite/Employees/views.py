@@ -7,39 +7,24 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Employees, WorkSchedules
 from .serializers import EmployeesSerializer, WorkSchedulesSerializer
-#Class EmployeeDetails Specific ID include workschedule records
-class EmployeeDetails(APIView):
-    # A helper method to get an employee object by primary key
-    def get_object(self, pk):
-        try:
-            return Employees.objects.get(pk=pk)
-        except Employees.DoesNotExist:
-            # If employee with given pk does not exist, raise Http404 exception
-            raise Http404
-
-    # Handle GET request for a specific employee with the given pk
-    def get(self, request, pk):
-        # Get the employee object with given pk
-        employee = self.get_object(pk)
-
-        # Serialize the employee object using EmployeesSerializer
-        serializer = EmployeesSerializer(employee)
-        employee_data = serializer.data
-
-        # Return the serialized employee data as a JSON response
-        return Response(employee_data)
-#Class MainEmployees GET POST PATCH DELETE Functions
+#Class EmployeeDetails 
 class MainEmployees(APIView):
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
         except Employees.DoesNotExist:
             raise Http404
+    #Specific ID include workschedule records
+    def get(self, request, pk):
+        employee = self.get_object(pk)
+        serializer = EmployeesSerializer(employee)
+        return Response(serializer.data)
 
     def get(self, request):
         # Get the "keyword" parameter from the request query string, default to empty string if not present
         keyword = request.GET.get('keyword', '')
         if not keyword:
+            #Get employees list
             employees = Employees.objects.all()
         # Filter the Employees queryset to include any records where the firstname, middlename, or lastname field contains the keyword
         # Also include any records where the concatenation of the firstname, middlename, and lastname fields matches the keyword
@@ -82,6 +67,7 @@ class MainEmployees(APIView):
         employee = self.get_object(pk)
         employee.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 #class EmployeesRegularization checks if regular employee
 class EmployeesRegularization(APIView):
     def get_object(self, pk):
@@ -112,10 +98,21 @@ class EmployeesRegularization(APIView):
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
 
+    # This is a view method for handling HTTP GET requests. It expects a request object
+    # as its first argument, and an optional 'format' parameter.
     def get(self, request, format=None):
+        
+        # Retrieve all WorkSchedules objects from the database.
         work_schedules = WorkSchedules.objects.all()
+        
+        # Serialize the WorkSchedules queryset into JSON format using the
+        # WorkSchedulesSerializer class. The 'many=True' parameter indicates that
+        # we're serializing multiple objects, rather than a single one.
         serializer = WorkSchedulesSerializer(work_schedules, many=True)
+        
+        # Return the serialized data in an HTTP response with the 'Response' class.
         return Response(serializer.data)
+
     def post(self, request):
         try:
             # Get the data from the request
