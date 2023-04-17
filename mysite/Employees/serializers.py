@@ -6,19 +6,20 @@ from .models import Employees,WorkSchedules
 class WorkSchedulesSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkSchedules
-        fields = fields = ('id', 'employee', 'date', 'time_start',
-                            'time_end', 'lunch_break_start', 'lunch_break_end',
-                              'created_by', 'created_datetime')
+        fields =  ('id', 'employee', 'date', 'time_start',
+                    'time_end', 'lunch_break_start', 'lunch_break_end',
+                    'created_by', 'created_datetime')
 
 class EmployeesSerializer(serializers.ModelSerializer):
     tenureship = serializers.SerializerMethodField()
     fullname = serializers.SerializerMethodField()
+    WorkSchedules = WorkSchedulesSerializer(many=True, read_only=True)  # Nested serializer for WorkSchedules
     class Meta:
         model = Employees
         fields = ('id', 'firstname', 'middlename', 'lastname','fullname',
                    'suffix', 'birthday', 'civilstatus',
                   'created_date', 'updated_date',  'isRegular',
-                  'RegularizationDate', 'EmploymentDate', 'tenureship')
+                  'RegularizationDate', 'EmploymentDate', 'tenureship','WorkSchedules') #add field Workschedules
         
     def get_fullname(self, obj):
         return f"{obj.firstname} {obj.middlename} {obj.lastname}"
@@ -33,9 +34,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
             return 'short-tenure'
         else:
             return 'long-tenure'
-
-
-
+        
     def validate_birthday(self, value):
         """
         Validate that the birthdate is a valid date and not a future date
@@ -61,4 +60,6 @@ class EmployeesSerializer(serializers.ModelSerializer):
         if 'suffix' not in data:
             data['suffix'] = None
         return super().to_internal_value(data)
+        
+
     
