@@ -111,7 +111,6 @@ class EmployeesRegularization(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
-
     def get(self, request, format=None):
         work_schedules = WorkSchedules.objects.all()
         serializer = WorkSchedulesSerializer(work_schedules, many=True)
