@@ -20,7 +20,7 @@ class Employees(models.Model):
         db_table = 'Employees' 
     # Return a string containing the values of the "firstname" and "lastname" attributes
     def __str__(self):
-        return f"{self.firstname} {self.lastname}"
+        return f"{self.firstname} {self.lastname} "
 # new class WorkSchedules
 class WorkSchedules(models.Model):
     # Define a foreign key field that references the Employees table's id column
@@ -39,16 +39,17 @@ class WorkSchedules(models.Model):
     def __str__(self):
         return f"{self.employee} - {self.date}"
     
-    def save(self, *args, **kwargs):
-        # Check if employee_id field is empty
-        if not self.employee_id:
-            raise ValueError("employee_id cannot be empty.")
-        # Attempt to retrieve the employee object with the employee_id
-        try:
-            employee = Employees.objects.get(pk=self.employee_id)
-        except Employees.DoesNotExist:
-            # If the employee does not exist, raise a ValueError
-            raise ValueError("employee_id does not exist in Employees table.")
-        # Call the save method of the parent class to save the record
-        super(WorkSchedules, self).save(*args, **kwargs)
+def save(self, *args, **kwargs):
+    # Check if employee field is empty
+    if not self.employee:
+        raise ValueError("employee cannot be empty.")
+    # Attempt to retrieve the employee object with the id
+    try:
+        employee = Employees.objects.get(pk=self.employee.id)
+    except Employees.DoesNotExist:
+        # If the employee does not exist, raise a ValueError
+        raise ValueError("employee_id does not exist in Employees table.")
+    # Call the save method of the parent class to save the record
+    super(WorkSchedules, self).save(*args, **kwargs)
+
 
