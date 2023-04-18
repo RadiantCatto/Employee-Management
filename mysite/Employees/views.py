@@ -97,12 +97,9 @@ class EmployeesRegularization(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
-<<<<<<< HEAD
-=======
 
     # This is a view method for handling HTTP GET requests. It expects a request object
     # as its first argument, and an optional 'format' parameter.
->>>>>>> a8735ac858d4798635f7cfd4138a2d4ef5e611b0
     def get(self, request, format=None):
         
         # Retrieve all WorkSchedules objects from the database.
