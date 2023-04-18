@@ -13,5 +13,6 @@ django-filter
 mssql-django
 pyodbc
 django-user-agents
+django-password-validators
 
 
