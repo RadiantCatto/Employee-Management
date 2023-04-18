@@ -1,4 +1,4 @@
-#!C:\Users\HYBrain\Documents\GitHub\OJT_Hybrain\mysite\env\Scripts\python.exe
+#!C:\Users\User\Documents\GitHub\OJT_Hybrain\mysite\env\Scripts\python.exe
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 
