@@ -1,5 +1,7 @@
 from django.db import models
 from Employees.models import Employees
+import hashlib
+from django.core.exceptions import ValidationError
 # Create your models here.
 #Users model
 class Users(models.Model):
