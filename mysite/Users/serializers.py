@@ -4,7 +4,6 @@ from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import Users, Employees
 
-
 class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employees
@@ -12,7 +11,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
                    'suffix', 'birthday', 'civilstatus',
                   'created_date', 'updated_date',  'isRegular',
                   'RegularizationDate', 'EmploymentDate')
-
+        
 class UsersSerializer(serializers.ModelSerializer):
     employee_id = serializers.PrimaryKeyRelatedField(queryset=Employees.objects.all())
 
@@ -21,8 +20,13 @@ class UsersSerializer(serializers.ModelSerializer):
         fields = ('id', 'employee_id', 'useraccess', 'passphrase', 'created_by')
 
     def create(self, validated_data):
+        # Get the employee ID from the validated data
         employee_id = validated_data.pop('employee_id')
-        user = Users.objects.create(employee_id=employee_id, **validated_data)
+        # Create a new User instance with the employee ID and validated data
+        user = Users(employee_id=employee_id, **validated_data)
+        # Save the User instance
+        user.save()
+        # Return the User instance
         return user
 
     def validate_employee_id(self, value):
