@@ -35,6 +35,19 @@ class UsersSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Employee already has an account")
         return value
     
+    def to_internal_value(self, data):
+        # Try to get the internal value of the data using the base class implementation
+        try:
+            return super().to_internal_value(data)
+        # Catch any validation errors raised by the base class implementation
+        except serializers.ValidationError as exc:
+            # Check if the error message contains the string "Invalid pk"
+            if 'Invalid pk' in str(exc):
+                # If it does, raise a new validation error with a custom error message for the employee_id field
+                raise serializers.ValidationError({'employee_id': ['employee_id not exist please apply Employee']})
+            # If the error message does not contain "Invalid pk", re-raise the original validation error
+            raise exc
+    
     def validate_useraccess(self, value):
         # Check if useraccess value is unique
         if Users.objects.filter(useraccess=value).exists():

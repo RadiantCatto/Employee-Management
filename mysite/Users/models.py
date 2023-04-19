@@ -1,7 +1,5 @@
 from django.db import models
 from Employees.models import Employees
-import hashlib
-from django.core.exceptions import ValidationError
 # Create your models here.
 #Users model
 class Users(models.Model):
@@ -13,7 +11,7 @@ class Users(models.Model):
     # Define useraccess as a character field with a maximum length of 255
     useraccess = models.CharField(max_length=255)
     # Define passphrase as a character field with a maximum length of 255
-    passphrase = models.CharField(max_length=255)
+    passphrase = models.TextField(max_length=255)
     # Define salt as a character field with a maximum length of 255
     salt = models.CharField(max_length=255)
     # Define created_by as a character field with a maximum length of 255
