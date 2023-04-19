@@ -11,7 +11,7 @@ class Users(models.Model):
     # Define useraccess as a character field with a maximum length of 255
     useraccess = models.CharField(max_length=255)
     # Define passphrase as a character field with a maximum length of 255
-    passphrase = models.TextField(max_length=255)
+    passphrase = models.TextField()
     # Define salt as a character field with a maximum length of 255
     salt = models.CharField(max_length=255)
     # Define created_by as a character field with a maximum length of 255
