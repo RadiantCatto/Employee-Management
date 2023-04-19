@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import UsersSerializer
+from .models import Users
 
 class CreateUserAPIView(APIView):
     def post(self, request):
@@ -29,4 +30,10 @@ class CreateUserAPIView(APIView):
                 del errors['non_field_errors']
             # Return a response with the serializer's validation errors
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UsersListView(APIView):
+    def get(self, request):
+        users = Users.objects.all()
+        serializer = UsersSerializer(users, many=True)
+        return Response(serializer.data)
 
