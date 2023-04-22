@@ -3,6 +3,12 @@ from Employees.models import Employees
 # Create your models here.
 #Users model
 class Users(models.Model):
+    # Define UserType as a character field with a maximum length of 255
+    USER_TYPE_CHOICES = [
+        ('Administrator', 'Administrator'),
+        ('Employees', 'Employees'),
+    ]
+    UserType = models.CharField(max_length=255, choices=USER_TYPE_CHOICES,default='Employees')
     # Define employee_id as a foreign key to the Employees model,
     # and set the on_delete behavior to cascade (delete all related records)
     employee_id = models.ForeignKey(Employees, on_delete=models.CASCADE)
