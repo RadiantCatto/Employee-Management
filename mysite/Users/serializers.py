@@ -14,10 +14,10 @@ class EmployeesSerializer(serializers.ModelSerializer):
         
 class UsersSerializer(serializers.ModelSerializer):
     employee_id = serializers.PrimaryKeyRelatedField(queryset=Employees.objects.all())
-
+    UserType = serializers.ChoiceField(choices=Users.USER_TYPE_CHOICES)
     class Meta:
         model = Users
-        fields = ('id', 'employee_id', 'useraccess', 'passphrase', 'created_by')
+        fields = ('id','UserType','employee_id', 'useraccess', 'passphrase', 'created_by')
 
     def create(self, validated_data):
         # Get the employee ID from the validated data
@@ -27,6 +27,17 @@ class UsersSerializer(serializers.ModelSerializer):
         # Save the User instance
         user.save()
         # Return the User instance
+        return user
+    
+    def create_UserType(self, validated_data):
+        # Extract the UserType property from the validated data
+        user_type = validated_data.pop('UserType', None)
+        # Create a new user with the remaining validated data
+        user = Users.objects.create(**validated_data)
+        # Set the UserType property on the new user
+        if user_type is not None:
+            user.UserType = user_type
+            user.save()
         return user
 
     def validate_employee_id(self, value):
