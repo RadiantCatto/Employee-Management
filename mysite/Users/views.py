@@ -8,6 +8,9 @@ from datetime import timedelta
 import jwt
 from django.conf import settings
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -16,15 +19,23 @@ from .serializers import UsersSerializer,EmployeesSerializer
 from .models import Users
 
 class UsersListView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
+
         users = Users.objects.all()
         serializer = UsersSerializer(users, many=True)
-        return Response(serializer.data)   
-     
+        return Response(serializer.data)  
+
 class CreateUserAPIView(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def post(self, request):
+
+        # Initialize serializer with request data
         serializer = UsersSerializer(data=request.data)
 
+        # Check if the serializer is valid
         if serializer.is_valid():
             # Generate a unique salt for each record
             salt = uuid.uuid4().hex
@@ -35,21 +46,28 @@ class CreateUserAPIView(APIView):
             hashed_password = hashlib.sha512((password + salt).encode('utf-8')).hexdigest()
             # Save the new user record to the database
             user = serializer.save(salt=salt, passphrase=hashed_password)
-            # Return a response with the created user's employee_id, useraccess, and employee_id
-            return Response({'UserType': user.UserType,
-                             'employee_id': user.employee_id.id,
-                             'employee_name': user.employee_id.firstname, 
-                             'salt': user.salt,
-                             'useraccess': user.useraccess,
-                             'passphrase': user.passphrase,
-                             'created_by': user.created_by
-                             }, status=status.HTTP_201_CREATED)
+
+            # Create a response data dictionary with the created user's employee_id, useraccess, and employee name
+            response_data = {
+                'UserType': user.UserType,
+                'employee_id': user.employee_id.id,
+                'employee_name': user.employee_id.firstname, 
+                'salt': user.salt,
+                'useraccess': user.useraccess,
+                'passphrase': user.passphrase,
+                'created_by': user.created_by
+            }
+
+            # Return a response with the response data and a status of HTTP 201 CREATED
+            return Response(response_data, status=status.HTTP_201_CREATED)
         else:
+            # If the serializer is invalid, extract the validation errors
             errors = dict(serializer.errors)
             if 'non_field_errors' in errors:
                 del errors['non_field_errors']
-            # Return a response with the serializer's validation errors
+            # Return a response with the serializer's validation errors and a status of HTTP 400 BAD REQUEST
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserLoginAPIView(APIView):
     def post(self, request):
@@ -85,13 +103,15 @@ class UserLoginAPIView(APIView):
         
         # Combine user and employee data into a single dictionary
         user_data = {**serialized_user, **serialized_employee}
-        
+   
         # Generate JWT token with expiration time of 1 hour
         jwt_payload = {
+            'user_id': user.employee_id.id,
             'user_data': user_data,
             'exp': datetime.datetime.utcnow() + timedelta(hours=1)
         }
         jwt_token = jwt.encode(jwt_payload, settings.SECRET_KEY, algorithm='HS256')
         
         # Return serialized user and JWT token in response
-        return Response({'user': user_data, 'jwt_token': jwt_token})
+        response_data = {'user': user_data, 'jwt_token': jwt_token.decode('utf-8'),'token_id': user.employee_id.id ,'token_type': 'access', 'expires_in': 3600}
+        return Response(response_data, status=status.HTTP_200_OK)
