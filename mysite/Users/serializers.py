@@ -8,9 +8,7 @@ class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employees
         fields = ( 'firstname', 'middlename', 'lastname',
-                   'suffix', 'birthday', 'civilstatus',
-                  'created_date', 'updated_date',  'isRegular',
-                  'RegularizationDate', 'EmploymentDate')
+                   'suffix')
         
 class UsersSerializer(serializers.ModelSerializer):
     employee_id = serializers.PrimaryKeyRelatedField(queryset=Employees.objects.all())
