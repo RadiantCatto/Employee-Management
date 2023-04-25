@@ -9,6 +9,9 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+import jwt
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
 
 from pathlib import Path
 import environ
@@ -56,8 +59,11 @@ INSTALLED_APPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'Users.authentication.BearerTokenAuthentication'
     ],
+
 }
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
