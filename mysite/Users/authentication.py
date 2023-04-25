@@ -9,7 +9,7 @@ class BearerTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get('Authorization')
         if not auth_header:
-            return None
+            raise AuthenticationFailed('Authorization header missing')
 
         auth_header_parts = auth_header.split(' ')
         if len(auth_header_parts) != 2 or auth_header_parts[0] != self.keyword:
