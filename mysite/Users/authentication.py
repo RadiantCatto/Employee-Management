@@ -2,7 +2,6 @@ import jwt
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from django.conf import settings
-
 class BearerTokenAuthentication(BaseAuthentication):
     keyword = 'Bearer'
 
@@ -30,3 +29,8 @@ class BearerTokenAuthentication(BaseAuthentication):
             raise AuthenticationFailed('Invalid token')
 
         return (user_data, None)
+
+
+
+
+

@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 
 class Employees(models.Model):
+    
     firstname = models.CharField('First Name: ',max_length=255, null=True)
     middlename = models.CharField('Middle Name: ',max_length=255, null=True)
     lastname = models.CharField('Last Name: ',max_length=255, null=True)
