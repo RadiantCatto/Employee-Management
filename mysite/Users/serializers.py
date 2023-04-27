@@ -3,6 +3,10 @@ from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from .models import Users, Employees
+import jwt
+from django.conf import settings
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework import exceptions
 
 class EmployeesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -13,15 +17,22 @@ class EmployeesSerializer(serializers.ModelSerializer):
 class UsersSerializer(serializers.ModelSerializer):
     employee_id = serializers.PrimaryKeyRelatedField(queryset=Employees.objects.all())
     UserType = serializers.ChoiceField(choices=Users.USER_TYPE_CHOICES)
+    full_name = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Users
-        fields = ('id','UserType','employee_id', 'useraccess', 'passphrase', 'created_by')
+        fields = ('id','UserType','employee_id', 'useraccess', 'passphrase', 'created_by','full_name')
+        extra_kwargs = {
+            'created_by': {'required': False}
+        }
+
+    def get_full_name(self, obj):
+        return f"{obj.employee_id.firstname} {obj.employee_id.lastname}"
 
     def create(self, validated_data):
         # Get the employee ID from the validated data
         employee_id = validated_data.pop('employee_id')
         # Create a new User instance with the employee ID and validated data
-        user = Users(employee_id=employee_id, **validated_data)
+        user = Users(employee_id=employee_id, **validated_data, created_by=self.context['request'].user['full_name'])
         # Save the User instance
         user.save()
         # Return the User instance

@@ -15,8 +15,15 @@ from Users.authentication import BearerTokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+
+
+from rest_framework.exceptions import AuthenticationFailed
+
+
 from .serializers import UsersSerializer,EmployeesSerializer
 from .models import Users
+
+
 
 class UsersListView(APIView):
     authentication_classes = [BearerTokenAuthentication]
@@ -29,12 +36,11 @@ class UsersListView(APIView):
 
 class CreateUserAPIView(APIView):
     authentication_classes = [BearerTokenAuthentication]
-    #authentication_classes = [JWTAuthentication]
 
     def post(self, request):
-
-        # Initialize serializer with request data
-        serializer = UsersSerializer(data=request.data)
+       
+        # Initialize serializer with request data and context
+        serializer = UsersSerializer(data=request.data, context={'request': request})
 
         # Check if the serializer is valid
         if serializer.is_valid():
@@ -45,6 +51,7 @@ class CreateUserAPIView(APIView):
             password = serializer.validated_data['passphrase']
             # Encode the salted password as UTF-8 and hash it using SHA-512
             hashed_password = hashlib.sha512((password + salt).encode('utf-8')).hexdigest()
+
             # Save the new user record to the database
             user = serializer.save(salt=salt, passphrase=hashed_password)
 
@@ -52,11 +59,9 @@ class CreateUserAPIView(APIView):
             response_data = {
                 'UserType': user.UserType,
                 'employee_id': user.employee_id.id,
-                'employee_name': user.employee_id.firstname, 
                 'salt': user.salt,
                 'useraccess': user.useraccess,
                 'passphrase': user.passphrase,
-                'created_by': user.created_by
             }
 
             # Return a response with the response data and a status of HTTP 201 CREATED
@@ -70,8 +75,13 @@ class CreateUserAPIView(APIView):
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
+
 class UserLoginAPIView(APIView):
+    authentication_classes = []
+    
     def post(self, request):
+        
         # Get username and password from request data
         username = request.data.get('username')
         password = request.data.get('password')     
@@ -101,13 +111,15 @@ class UserLoginAPIView(APIView):
         # Remove passphrase and salt from serialized user data
         serialized_user.pop('passphrase', None)
         serialized_user.pop('salt', None)
-        
+        serialized_user.pop('created_by', None)
         # Combine user and employee data into a single dictionary
         user_data = {**serialized_user, **serialized_employee}
    
         # Generate JWT token with expiration time of 1 hour
         jwt_payload = {
             'user_id': user.employee_id.id,
+            'full_name': user_serializer.data['full_name'],
+            'created_by':user_serializer.data['full_name'],
             'user_data': user_data,
             'exp': datetime.datetime.utcnow() + timedelta(hours=1)
         }
