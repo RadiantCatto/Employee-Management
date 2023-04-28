@@ -9,6 +9,7 @@ from .models import Employees, WorkSchedules
 from .serializers import EmployeesSerializer, WorkSchedulesSerializer
 #Class EmployeeDetails 
 class MainEmployees(APIView):
+    authentication_classes = []
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
@@ -49,6 +50,7 @@ class MainEmployees(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        
         serializer = EmployeesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -70,6 +72,7 @@ class MainEmployees(APIView):
 
 #Class EmployeesRegularization checks if regular employee
 class EmployeesRegularization(APIView):
+    authentication_classes = []
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
@@ -97,7 +100,7 @@ class EmployeesRegularization(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
-
+    authentication_classes = []
     # This is a view method for handling HTTP GET requests. It expects a request object
     # as its first argument, and an optional 'format' parameter.
     def get(self, request, format=None):

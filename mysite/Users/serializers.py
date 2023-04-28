@@ -32,11 +32,20 @@ class UsersSerializer(serializers.ModelSerializer):
         # Get the employee ID from the validated data
         employee_id = validated_data.pop('employee_id')
         # Create a new User instance with the employee ID and validated data
-        user = Users(employee_id=employee_id, **validated_data, created_by=self.context['request'].user['full_name'])
+        user = Users(employee_id=employee_id, **validated_data, created_by=self.context['request'].user)
         # Save the User instance
         user.save()
-        # Return the User instance
-        return user
+        # Create a response data dictionary with the created user's employee_id, useraccess, and employee name
+        response_data = {
+            'UserType': user.UserType,
+            'employee_id': user.employee_id.id,
+            'salt': user.salt,
+            'useraccess': user.useraccess,
+            'passphrase': user.passphrase,
+            'created_by': user.created_by.full_name,
+        }
+        # Return the response data
+        return response_data
     
     def create_UserType(self, validated_data):
         # Extract the UserType property from the validated data
