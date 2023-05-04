@@ -122,7 +122,7 @@ class EmployeesRegularization(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
-
+    authentication_classes = [BearerTokenAuthentication]
     # This is a view method for handling HTTP GET requests. It expects a request object
     # as its first argument, and an optional 'format' parameter.
     def get(self, request, format=None):
@@ -137,13 +137,15 @@ class WorkSchedulesView(APIView):
         
         # Return the serialized data in an HTTP response with the 'Response' class.
         return Response(serializer.data)
-
+    
     def post(self, request):
         try:
             # Get the data from the request
             workschedules_data = request.data
+
             # Get a list of employee IDs from the workschedule data
             employee_id_list = [int(workschedule['employee']) for workschedule in workschedules_data]
+
             # Delete any existing workschedules for the specified employees
             existing_workschedules = WorkSchedules.objects.filter(employee_id__in=employee_id_list)
             existing_workschedules.delete()
@@ -151,13 +153,25 @@ class WorkSchedulesView(APIView):
             # Create a serializer for the workschedule data
             workschedules_serializer = WorkSchedulesSerializer(data=workschedules_data, many=True)
 
-            # If the serializer is valid, save the data and return a success response
             if workschedules_serializer.is_valid():
-                workschedules_serializer.save()
-                return Response(workschedules_serializer.data, status=status.HTTP_201_CREATED)
-            else:
-                # If the serializer is not valid, return an error response
-                return Response(workschedules_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                # Get the JWT token from the Authorization header
+                auth_header = request.headers.get('Authorization')
+                if auth_header:
+                    jwt_token = auth_header.split(' ')[1]
+                    # Decode the JWT token to get the payload
+                    payload = jwt.decode(jwt_token.encode(), settings.SECRET_KEY, algorithms=['HS256'])
+                    user_data = payload.get('user_data')
+                    # Set the created_by field as the user's full name
+                    for workschedule in workschedules_serializer.validated_data:
+                        workschedule['created_by'] = user_data['full_name']
+                    # Save the serializer data
+                    workschedules_serializer.save()
+                    # Return a success response
+                    return Response(workschedules_serializer.data, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({'error': 'Authorization header not found.'}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             # If an error occurs, return a server error response
             return Response(str(e), status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
