@@ -7,8 +7,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Employees, WorkSchedules
 from .serializers import EmployeesSerializer, WorkSchedulesSerializer
+
+from Users.authentication import BearerTokenAuthentication
+import jwt
+from django.conf import settings
+
 #Class EmployeeDetails 
 class MainEmployees(APIView):
+    authentication_classes = [BearerTokenAuthentication]
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
@@ -51,17 +57,34 @@ class MainEmployees(APIView):
     def post(self, request):
         serializer = EmployeesSerializer(data=request.data)
         if serializer.is_valid():
+            # Get the JWT token from the Authorization header
+            jwt_token = request.headers.get('Authorization').split(' ')[1]
+            # Decode the JWT token to get the payload
+            payload = jwt.decode(jwt_token.encode(), settings.SECRET_KEY, algorithms=['HS256'])
+            user_data = payload.get('user_data')
+            # Set the created_by field as the user's full name
+            serializer.validated_data['created_by'] = user_data['full_name']
+            # Save the serializer data
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
     def patch(self, request, pk):
         employee = self.get_object(pk)
-        serializer = EmployeesSerializer(employee, data=request.data)
+        serializer = EmployeesSerializer(employee, data=request.data, context={'request': request})
         if serializer.is_valid():
+            jwt_token = request.headers.get('Authorization')
+            if jwt_token:
+                jwt_token = jwt_token.split(' ')[1]
+                # Get the user data from the JWT token payload
+                payload = jwt.decode(jwt_token.encode(), settings.SECRET_KEY, algorithms=['HS256'])
+                user_data = payload.get('user_data')
+                # Set the updated_by field as the user's full name
+                serializer.validated_data['updated_by'] = user_data['full_name']
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     def delete(self, request, pk):
         employee = self.get_object(pk)
@@ -97,7 +120,7 @@ class EmployeesRegularization(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
-
+    authentication_classes = [BearerTokenAuthentication]
     # This is a view method for handling HTTP GET requests. It expects a request object
     # as its first argument, and an optional 'format' parameter.
     def get(self, request, format=None):

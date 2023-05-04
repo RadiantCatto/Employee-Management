@@ -1,7 +1,6 @@
 from django.db import models
 from Employees.models import Employees
-# Create your models here.
-#Users model
+
 class Users(models.Model):
     # Define UserType as a character field with a maximum length of 255
     USER_TYPE_CHOICES = [

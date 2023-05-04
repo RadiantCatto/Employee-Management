@@ -120,6 +120,7 @@ class UserLoginAPIView(APIView):
             'user_id': user.employee_id.id,
             'full_name': user_serializer.data['full_name'],
             'created_by':user_serializer.data['full_name'],
+            'updated_by':user_serializer.data['full_name'],
             'user_data': user_data,
             'exp': datetime.datetime.utcnow() + timedelta(hours=1)
         }

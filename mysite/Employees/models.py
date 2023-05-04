@@ -16,6 +16,8 @@ class Employees(models.Model):
     isRegular = models.BooleanField(default=False)  # new column
     RegularizationDate = models.DateField(null=True)  # new column
     EmploymentDate = models.DateField(null=True)  # new column
+    created_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
     class Meta:
         # Set the name of the database table for this model
         db_table = 'Employees' 
