@@ -28,4 +28,3 @@ class BearerTokenAuthentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed('Missing user data in token')
 
         return (None, user_data)
-

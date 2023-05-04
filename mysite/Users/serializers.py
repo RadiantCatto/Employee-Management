@@ -39,10 +39,8 @@ class UsersSerializer(serializers.ModelSerializer):
         response_data = {
             'UserType': user.UserType,
             'employee_id': user.employee_id.id,
-            'salt': user.salt,
             'useraccess': user.useraccess,
             'passphrase': user.passphrase,
-            'created_by': user.created_by.full_name,
         }
         # Return the response data
         return response_data

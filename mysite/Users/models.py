@@ -20,7 +20,7 @@ class Users(models.Model):
     # Define salt as a character field with a maximum length of 255
     salt = models.CharField(max_length=255)
     # Define created_by as a character field with a maximum length of 255
-    created_by = models.CharField(max_length=255)
+    created_by = models.CharField(max_length=255, null=True)
     # Define created_datetime as a date/time field that automatically records the date/time
     # when the record is created
     created_datetime = models.DateTimeField(auto_now_add=True)

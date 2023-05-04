@@ -9,12 +9,14 @@ from .models import Employees, WorkSchedules
 from .serializers import EmployeesSerializer, WorkSchedulesSerializer
 
 from Users.authentication import BearerTokenAuthentication
+from Users.permission import IsAdminOrEmployee
 import jwt
 from django.conf import settings
 
 #Class EmployeeDetails 
 class MainEmployees(APIView):
     authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAdminOrEmployee]
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
