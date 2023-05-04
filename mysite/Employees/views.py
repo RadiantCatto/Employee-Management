@@ -15,7 +15,6 @@ from django.conf import settings
 #Class EmployeeDetails 
 class MainEmployees(APIView):
     authentication_classes = [BearerTokenAuthentication]
-    authentication_classes = []
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
