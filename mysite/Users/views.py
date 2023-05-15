@@ -38,44 +38,44 @@ class UsersListView(APIView):
 
 class CreateUserAPIView(APIView):
     authentication_classes = [BearerTokenAuthentication]
-    permission_classes = [IsAdminOrEmployee]
+    # permission_classes = [IsAdminOrEmployee]
 
     def post(self, request):
-       
-        # Initialize serializer with request data and context
         serializer = UsersSerializer(data=request.data, context={'request': request})
 
-        # Check if the serializer is valid
         if serializer.is_valid():
-            # Generate a unique salt for each record
             salt = uuid.uuid4().hex
-
-            # Hash the plain text password with the generated salt
             password = serializer.validated_data['passphrase']
-            # Encode the salted password as UTF-8 and hash it using SHA-512
             hashed_password = hashlib.sha512((password + salt).encode('utf-8')).hexdigest()
 
-            # Save the new user record to the database
-            user = serializer.save(salt=salt, passphrase=hashed_password)
-            user_type = serializer.data['UserType']
-            # Create a response data dictionary with the created user's employee_id, useraccess, and employee name
+            # Set the created_by field as the user's full name
+            jwt_token = request.headers.get('Authorization').split(' ')[1]
+            # Decode the JWT token to get the payload
+            payload = jwt.decode(jwt_token, settings.SECRET_KEY, algorithms=['HS256'])
+            user_data = payload.get('user_data')
+            serializer.validated_data['created_by'] = user_data['full_name']
+
+            # Save the serializer and retrieve the instance
+            user_instance = serializer.save(salt=salt, passphrase=hashed_password)
+
             response_data = {
-                'UserType': user_type,
-                'employee_id': user.employee_id.id,
-                'salt': user.salt,
-                'useraccess': user.useraccess,
-                'passphrase': user.passphrase,
+                'UserType': user_instance.UserType,
+                'employee_id': str(user_instance.employee_id),  # Convert the employee_id to a string
+                'useraccess': user_instance.useraccess,
+                'passphrase': user_instance.passphrase,
+                'created_by': user_instance.created_by,
             }
 
-            # Return a response with the response data and a status of HTTP 201 CREATED
             return Response(response_data, status=status.HTTP_201_CREATED)
         else:
-            # If the serializer is invalid, extract the validation errors
             errors = dict(serializer.errors)
             if 'non_field_errors' in errors:
                 del errors['non_field_errors']
-            # Return a response with the serializer's validation errors and a status of HTTP 400 BAD REQUEST
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
         
     def patch(self, request, user_id):
         # Get the user object from the database

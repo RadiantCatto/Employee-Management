@@ -28,22 +28,14 @@ class UsersSerializer(serializers.ModelSerializer):
     def get_full_name(self, obj):
         return f"{obj.employee_id.firstname} {obj.employee_id.lastname}"
 
+
     def create(self, validated_data):
-        # Get the employee ID from the validated data
-        employee_id = validated_data.pop('employee_id')
-        # Create a new User instance with the employee ID and validated data
-        user = Users(employee_id=employee_id, **validated_data, created_by=self.context['request'].user)
-        # Save the User instance
-        user.save()
-        # Create a response data dictionary with the created user's employee_id, useraccess, and employee name
-        response_data = {
-            'UserType': user.UserType,
-            'employee_id': user.employee_id.id,
-            'useraccess': user.useraccess,
-            'passphrase': user.passphrase,
-        }
-        # Return the response data
-        return response_data
+        created_by = validated_data.pop('created_by')  # Get the value of created_by
+        user = Users.objects.create(**validated_data)  # Create the user instance
+        user.created_by = created_by  # Set the created_by field
+        user.save()  # Save the user instance
+        return user
+
     
     def create_UserType(self, validated_data):
         # Extract the UserType property from the validated data
