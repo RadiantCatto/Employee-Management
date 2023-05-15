@@ -7,14 +7,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Employees, WorkSchedules
 from .serializers import EmployeesSerializer, WorkSchedulesSerializer
-
+from Users.permission import IsAdminOrEmployee
 from Users.authentication import BearerTokenAuthentication
 from Users.permission import IsAdminOrEmployee
 import jwt
 from django.conf import settings
 
-#Class EmployeeDetails 
-class MainEmployees(APIView):
+class EmployeeDetail(APIView):
     authentication_classes = [BearerTokenAuthentication]
     permission_classes = [IsAdminOrEmployee]
     def get_object(self, pk):
@@ -22,12 +21,24 @@ class MainEmployees(APIView):
             return Employees.objects.get(pk=pk)
         except Employees.DoesNotExist:
             raise Http404
-    #Specific ID include workschedule records
-    def get(self, request, pk):
+
+    def get(self, request, pk): # add pk as a parameter here
         employee = self.get_object(pk)
         serializer = EmployeesSerializer(employee)
         return Response(serializer.data)
 
+
+class MainEmployees(APIView):
+    authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAdminOrEmployee]
+
+    def get_object(self, pk):
+        try:
+            return Employees.objects.get(pk=pk)
+        except Employees.DoesNotExist:
+            raise Http404
+
+    #Specific ID include workschedule records
     def get(self, request):
         # Get the "keyword" parameter from the request query string, default to empty string if not present
         keyword = request.GET.get('keyword', '')
