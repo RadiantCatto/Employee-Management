@@ -4,41 +4,48 @@ import hashlib
 #class UserLoginAPIView modules ------
 import datetime
 from datetime import timedelta
-
 import jwt
 from django.conf import settings
-
-
-
 from Users.authentication import BearerTokenAuthentication
 from .permission import IsAdminOrEmployee
-
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-
-
 from rest_framework.exceptions import AuthenticationFailed
-
-
 from .serializers import UsersSerializer,EmployeesSerializer
 from .models import Users
+from django.http import Http404
 
+class UsersDetailView(APIView):
+    authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAdminOrEmployee]
 
+    def get(self, request, pk=None):
+        if pk is not None:
+            try:
+                user = Users.objects.get(employee_id=pk)
+                serializer = UsersSerializer(user)
+                return Response(serializer.data)
+            except Users.DoesNotExist:
+                return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            users = Users.objects.all()
+            serializer = UsersSerializer(users, many=True)
+            return Response(serializer.data)
 
 class UsersListView(APIView):
     authentication_classes = [BearerTokenAuthentication]
     permission_classes = [IsAdminOrEmployee]
-    #authentication_classes = [JWTAuthentication]
-    def get(self, request):
 
+    def get(self, request):
         users = Users.objects.all()
         serializer = UsersSerializer(users, many=True)
-        return Response(serializer.data)  
+        return Response(serializer.data)
+
 
 class CreateUserAPIView(APIView):
     authentication_classes = [BearerTokenAuthentication]
-    # permission_classes = [IsAdminOrEmployee]
+    permission_classes = [IsAdminOrEmployee]
 
     def post(self, request):
         serializer = UsersSerializer(data=request.data, context={'request': request})
@@ -72,11 +79,7 @@ class CreateUserAPIView(APIView):
             if 'non_field_errors' in errors:
                 del errors['non_field_errors']
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-
-        
+      
     def patch(self, request, user_id):
         # Get the user object from the database
         try:

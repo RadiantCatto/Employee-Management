@@ -24,10 +24,14 @@ class IsAdminOrEmployee(BasePermission):
                     pk = view.kwargs.get('pk')
                     print("Employee ID:", employee_id)
                     print("PK:", pk)
-                    if employee_id == pk:
+                    if pk is not None and employee_id == int(pk):  # Compare employee_id with pk (converted to int)
                         return True
                     else:
                         # Deny access if the logged-in user is trying to access other employees' data
                         raise PermissionDenied("You have no access to this record.")
                 return False
         return False
+
+
+
+

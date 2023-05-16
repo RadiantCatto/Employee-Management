@@ -66,7 +66,10 @@ class EmployeesSerializer(serializers.ModelSerializer):
         Remove middle name and suffix fields if they are not present in request data
         """
         if 'middle_name' not in data or data['middle_name'] in [None, '']:
-            data['middlename'] = None
+            data['middlename'] = ''  # Replace None with an empty string
+        else:
+            data['middlename'] = data['middle_name']  # Assign the provided middle name
+        
         if 'suffix' not in data or data['suffix'] in [None, '']:
             data['suffix'] = None
         return super().to_internal_value(data)

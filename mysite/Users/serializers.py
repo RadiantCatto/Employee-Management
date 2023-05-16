@@ -24,6 +24,7 @@ class UsersSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'created_by': {'required': False}
         }
+        depth = 1
 
     def get_full_name(self, obj):
         return f"{obj.employee_id.firstname} {obj.employee_id.lastname}"
