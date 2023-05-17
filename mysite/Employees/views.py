@@ -107,7 +107,8 @@ class MainEmployees(APIView):
 
 #Class EmployeesRegularization checks if regular employee
 class EmployeesRegularization(APIView):
-    authentication_classes = []
+    authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAdminOrEmployee]
     def get_object(self, pk):
         try:
             return Employees.objects.get(pk=pk)
@@ -136,6 +137,7 @@ class EmployeesRegularization(APIView):
 # class WorkSchedulesView List Employees's WorkSchedules Define a view to handle creating work schedules
 class WorkSchedulesView(APIView):
     authentication_classes = [BearerTokenAuthentication]
+    permission_classes = [IsAdminOrEmployee]
     # This is a view method for handling HTTP GET requests. It expects a request object
     # as its first argument, and an optional 'format' parameter.
     def get(self, request, format=None):
