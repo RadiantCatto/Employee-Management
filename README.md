@@ -15,6 +15,23 @@ This collection contains a set of APIs that provide functionality and data relat
 - **Postman**:  
   Utilize **Postman** for API testing and documentation.
 
+## 📂 **Repository Structure**
+
+```
+Employee-Management/
+|
+|-- mysite/                  # Django project directory
+|   |-- Name/                # Project name directory
+|   |-- Employees/           # Employee-related functionality
+|   |-- Users/               # User-related functionality
+|   |-- env/                 # Virtual environment
+|   |-- mysite/              # Settings and project configuration
+|   |-- manage.py            # Django manage script
+|   |-- requirements.txt     # Project dependencies
+|   |-- tut.txt              # Project documentation/tutorials
+
+```
+
 ## 📚 API Endpoints
 
 ### 1. **Users Management**
