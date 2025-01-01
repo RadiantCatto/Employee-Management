@@ -71,7 +71,7 @@ This folder utilizes **Bearer Tokens** for authorization. Please make sure to in
 
 ## 📜 API Documentation via Postman
 
-All endpoints are documented via **Postman**, which can be accessed [here]([https://www.postman.com/](https://documenter.getpostman.com/view/26443770/2s93kxckys#intro)).
+All endpoints are documented via **Postman**, which can be accessed [here](https://documenter.getpostman.com/view/26443770/2s93kxckys#intro).
 
 ## 🚀 Project Enhancements
 
